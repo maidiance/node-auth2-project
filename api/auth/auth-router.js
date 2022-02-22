@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const User = require('../users/users-model');
 const { checkUsernameExists, validateRoleName } = require('./auth-middleware');
@@ -69,7 +70,7 @@ function generateToken(user) {
     username: user.username,
     role_name: user.role_name
   };
-  return JWT_SECRET.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
 }
 
 module.exports = router;
