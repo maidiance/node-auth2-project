@@ -18,8 +18,12 @@ router.post("/register", validateRoleName, (req, res, next) => {
     }
    */
   let user = req.body;
+  if(!user.role_name || user.role_name.trim()) {
+    user.role_name = req.role_name;
+  }
   const hash = bcrypt.hashSync(user.password, 12);
   user.password = hash;
+  console.log(user);
   User.add(user)
     .then(saved => {
       res.status(201).json(saved);
