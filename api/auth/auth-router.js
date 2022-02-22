@@ -47,6 +47,29 @@ router.post("/login", checkUsernameExists, (req, res, next) => {
       "role_name": "admin" // the role of the authenticated user
     }
    */
+  let { username, password } = req.body;
+  User.findBy({ username })
+    .then(([user]) => {
+      if(user && bcrypt.compareSync(password, user.password)) {
+        const token = generateToken(user);
+        res.status(200).json({
+          message: `${user.username} is back!`,
+          token
+        })
+      } else {
+        next({ status: 401, message: 'Invalid Credentials' })
+      }
+    })
+    .catch(next)
 });
+
+function generateToken(user) {
+  const payload = {
+    subject: user.user_id,
+    username: user.username,
+    role_name: user.role_name
+  };
+  return JWT_SECRET.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+}
 
 module.exports = router;
